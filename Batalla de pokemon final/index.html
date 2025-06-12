@@ -1,0 +1,59 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Batalla de Pokémon</title>
+    <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+
+    <h1>Batalla de Equipos</h1>
+
+    <div>
+        <button id="cargarale"> Cargar aleatoriamente los equipos</button>
+    </div>
+
+    <div class="team">
+        <div id="equipo1">
+        <h2>Equipo 1</h2>
+        <label for="epokemon1"> POKEMON 1</label>
+        <input type="number" id="epokemon1" placeholder="ingrese pokemon"/><br />
+        <label for="epokemon2"> POKEMON 2</label>
+        <input type="number" id="epokemon2" placeholder="ingrese pokemon"/><br />
+        <label for="epokemon3"> POKEMON 3 </label>
+        <input type="number" id="epokemon3" placeholder="ingrese pokemon"/><br /><br />
+        <button id="tirardados1"> Dados equipo 1 </button>
+        <br>
+        <button id="cargarequipo1">Cargar Equipo </button>
+        <div id="dados1"></div>
+        </div>
+    </div>
+
+    <div class="team">
+        <div id="equipo2">
+        <h2>Equipo 2</h2>
+        <label for="e2pokemon1"> POKEMON 1</label>
+        <input type="number" id="e2pokemon1" placeholder="ingrese pokemon"/><br />
+        <label for="e2pokemon2">POKEMON 2</label>
+        <input type="number" id="e2pokemon2" placeholder="ingrese pokemon"/><br />
+        <label for="e2pokemon3"> POKEMON 3</label>
+        <input type="number" id="e2pokemon3" placeholder="ingrese pokemon"/><br /><br />
+        <button id="tirardados2"> Dados equipo 2</button>
+        <br>
+        <button id="cargarequipo2">Cargar Equipo </button>
+        <div id="dados2"></div>
+        </div>
+    </div>
+
+    <div>
+        <button id="iniciarBatalla" disabled>Iniciar Batalla</button>
+        <h2 id="resultado"></h2>
+    </div>
+
+    <script src="./js/script.js"></script>
+    <script src="./js/dados.js"></script>
+    </body>
+    </html>
+<!-- arreglar codigo , aprender usar tabulacion  -->
+<!-- Tambien hay una carpeta de img, para poder mostrar el fondo que se muestra y fotos de los dados (no utilizados) -->
