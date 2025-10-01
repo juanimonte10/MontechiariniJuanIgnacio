@@ -1,30 +1,29 @@
 <?php
 session_start();
-require_once "../../config/db.php";
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = $_POST["email"];
-    $password = $_POST["password"];
-
-    $sql = "SELECT * FROM usuarios WHERE email = ? AND rol = 'admin'";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $admin = $stmt->get_result()->fetch_assoc();
-
-    if ($admin && password_verify($password, $admin["password"])) {
-        $_SESSION["admin"] = $admin;
-        header("Location: dashboard.php");
-        exit;
-    } else {
-        echo "Datos incorrectos";
-    }
+// Redirigir si ya hay admin logueado
+if (isset($_SESSION['usuario']) && $_SESSION['usuario']['rol'] === "admin") {
+    header("Location: Dashboard.php");
+    exit;
 }
+
+// Capturar error o mensaje
+$error = isset($_GET['error']) ? $_GET['error'] : '';
+$msg = isset($_GET['msg']) ? $_GET['msg'] : '';
 ?>
 
-<h2> Login </h2>
-<form method="post">
+<form action="../../Controllers/usuariocontroller.php" method="POST">
+    <input type="hidden" name="action" value="login_usuario">
     <input type="email" name="email" placeholder="Email" required>
     <input type="password" name="password" placeholder="Contraseña" required>
-    <button type="submit"> Iniciar sesion </button>
+    <button type="submit">Iniciar sesión</button>
 </form>
+
+<?php if($error): ?>
+    <p style="color:red;"><?= htmlspecialchars($error) ?></p>
+<?php endif; ?>
+
+<?php if($msg): ?>
+    <p style="color:green;"><?= htmlspecialchars($msg) ?></p>
+<?php endif; ?>
+
