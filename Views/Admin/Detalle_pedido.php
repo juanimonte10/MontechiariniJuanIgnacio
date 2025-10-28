@@ -35,7 +35,7 @@ if (!$detalles) {
 </head>
 <body>
 <div class="admin-container">
-?>
+
 
 <h1>Detalle del Pedido #<?= htmlspecialchars($id_pedido) ?></h1>
 
