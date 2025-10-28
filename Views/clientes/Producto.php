@@ -59,6 +59,18 @@ if (!$producto) {
     <?php
         // mostrar header simple (index.php ya tiene header, aquí se reutiliza parcialmente)
     ?>
+    <?php if (!empty($_SESSION['error'])): ?>
+        <div style="max-width:1000px;margin:18px auto;padding:12px 16px;border-radius:8px;background:#fdecea;color:#721c24;border:1px solid #f5c6cb;">
+            <?= htmlspecialchars($_SESSION['error']) ?>
+        </div>
+        <?php unset($_SESSION['error']); ?>
+    <?php endif; ?>
+    <?php if (!empty($_SESSION['msg'])): ?>
+        <div style="max-width:1000px;margin:18px auto;padding:12px 16px;border-radius:8px;background:#e6ffed;color:#155724;border:1px solid #c3e6cb;">
+            <?= htmlspecialchars($_SESSION['msg']) ?>
+        </div>
+        <?php unset($_SESSION['msg']); ?>
+    <?php endif; ?>
     <div class="container">
         <main class="main">
             <div class="product-detail">
@@ -76,10 +88,10 @@ if (!$producto) {
                     <div class="product-desc"><?= nl2br(htmlspecialchars($producto['descripcion'])) ?></div>
 
                     <div class="actions">
-                        <form action="../../controllers/carrito_controller.php" method="POST">
+                        <form id="addToCartForm" action="../../controllers/carrito_controller.php" method="POST">
                             <input type="hidden" name="id_producto" value="<?= $producto['id_producto'] ?>">
-                            <input type="number" name="cantidad" value="1" min="1" max="<?= $producto['stock'] ?>" style="width:80px;padding:8px;border:1px solid #ddd;border-radius:6px">
-                            <button class="btn btn-primary" type="submit" <?= ($producto['stock']==0)?'disabled':'' ?>>Agregar al carrito</button>
+                            <input id="qtyInput" type="number" name="cantidad" value="1" min="1" max="<?= $producto['stock'] ?>" style="width:80px;padding:8px;border:1px solid #ddd;border-radius:6px">
+                            <button id="addBtn" class="btn btn-primary" type="submit" <?= ($producto['stock']==0)?'disabled':'' ?>>Agregar al carrito</button>
                         </form>
 
                         <a href="../../Index.php" class="btn btn-outline">Volver al catálogo</a>
@@ -88,5 +100,31 @@ if (!$producto) {
             </div>
         </main>
     </div>
+    <script>
+    (function(){
+        const form = document.getElementById('addToCartForm');
+        const qty = document.getElementById('qtyInput');
+        const max = parseInt(qty.getAttribute('max') || '0', 10);
+        form.addEventListener('submit', function(e){
+            const v = parseInt(qty.value || '0', 10);
+            if (isNaN(v) || v < 1) {
+                e.preventDefault();
+                alert('Ingresa una cantidad válida');
+                return;
+            }
+            if (max <= 0) {
+                e.preventDefault();
+                alert('Ya no hay stock disponible de este producto');
+                return;
+            }
+            if (v > max) {
+                e.preventDefault();
+                alert('No puedes agregar más de ' + max + ' unidad(es).');
+                return;
+            }
+            // otherwise allow submit; server will also validate
+        });
+    })();
+    </script>
 </body>
 </html>
