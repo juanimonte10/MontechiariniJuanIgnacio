@@ -1,0 +1,163 @@
+/* Index styles - palette aligned with Registro.css */
+:root{
+    --primary:#007bff;
+    --primary-dark:#0056b3;
+    --success:#4CAF50;
+    --danger:#dc3545;
+    --muted:#6c757d;
+    --bg:#f5f5f5;
+    --card-bg:#ffffff;
+}
+
+body{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin:0;
+    background:var(--bg);
+    color:#222;
+}
+.header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:18px 24px;
+    background:linear-gradient(90deg, rgba(0,123,255,0.06), rgba(0,0,0,0));
+}
+.header .title{font-size:1.25rem; font-weight:600;}
+
+.container{
+    display:flex;
+    gap:20px;
+    max-width:1200px;
+    margin:20px auto;
+    padding:0 16px;
+}
+
+/* Sidebar */
+.sidebar-toggle{
+    position:fixed;
+    left:16px;
+    top:90px; /* ajustado para que quede más cerca del título Dos Hermanas */
+    background:var(--primary);
+    color:white;
+    border:none;
+    padding:10px 12px;
+    border-radius:6px;
+    cursor:pointer;
+    box-shadow:0 3px 8px rgba(0,0,0,0.12);
+    z-index:1200;
+}
+
+ .sidebar{
+    width:260px;
+    background:var(--card-bg);
+    border-radius:8px;
+    padding:16px;
+    padding-top:56px; /* dejar espacio arriba para que el botón no tape el título "Buscar productos" */
+    box-shadow:0 6px 18px rgba(0,0,0,0.06);
+    transform:translateX(-120%);
+    transition:transform .28s ease;
+    position:fixed;
+    left:16px;
+    top:94px; /* ajustado para alinearse con el botón toggle */
+    bottom:16px;
+    overflow:auto;
+    z-index:1100;
+}
+.sidebar.open{transform:translateX(0);}
+.sidebar:hover{transform:translateX(0);} /* abrir al pasar el mouse */
+.sidebar{background: rgba(255,255,255,0.88); backdrop-filter: blur(6px);} /* semitransparente */
+.sidebar h3{margin-top:0;margin-bottom:10px;color:var(--primary);}
+.sidebar .field{margin-bottom:20px}
+/* un pequeño espacio extra entre header y contenido */
+.header{padding-bottom:20px}
+.container{margin-top:28px}
+.sidebar label{display:block;font-size:.9rem;color:var(--muted);margin-bottom:6px}
+.sidebar input[type="text"], .sidebar select{width:100%;padding:8px;border:1px solid #ddd;border-radius:6px}
+.sidebar button{width:100%;padding:10px;border-radius:6px;border:none;background:var(--primary);color:#fff}
+
+/* Main */
+.main{
+    flex:1 1 auto;
+    margin-left:0; /* por defecto sin margen, se añade cuando el sidebar está abierto */
+}
+
+/* cuando el sidebar está abierto, empuja el main */
+.sidebar.open + .container .main,
+.sidebar:hover + .container .main,
+body.sidebar-open .container .main {
+    margin-left:300px;
+}
+
+.search-row{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:8px;
+    margin:12px 0 18px 0;
+}
+.search-row input[type="search"]{
+    width:60%;
+    max-width:520px;
+    padding:10px 12px;
+    border:1px solid #ddd;
+    border-radius:6px;
+}
+.search-row button{
+    padding:10px 14px;
+    border-radius:6px;
+    border:none;
+    background:var(--primary);
+    color:white;
+    cursor:pointer;
+}
+
+.products-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap:20px;
+}
+
+.producto{
+    background:var(--card-bg);
+    padding:14px;
+    border-radius:8px;
+    box-shadow:0 6px 14px rgba(0,0,0,0.04);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+.producto h3{margin:8px 0 6px 0;font-size:1.05rem}
+.producto p{color:var(--muted);font-size:.95rem}
+.producto .precio{margin-top:8px;font-weight:700;color:#111}
+.producto .stock{margin-top:6px;font-size:.9rem}
+
+.producto img{width:160px;height:120px;object-fit:cover;border-radius:6px;border:1px solid #eee}
+
+.product-actions{display:flex;gap:8px;margin-top:12px;width:100%;justify-content:center}
+.btn{
+    padding:8px 12px;border-radius:6px;border:none;color:white;cursor:pointer;font-weight:600
+}
+.btn-primary{background:var(--primary)}
+.btn-primary:hover{background:var(--primary-dark)}
+.btn-danger{background:var(--danger)}
+.btn-outline{background:transparent;border:1px solid #ddd;color:#333}
+
+/* Responsive tweaks */
+@media (max-width:900px){
+    .container{padding:0 12px}
+    .main{margin-left:0}
+    .sidebar{position:relative;transform:translateX(0);width:100%;top:auto;left:auto;margin-bottom:12px;padding-top:16px}
+    .sidebar-toggle{display:none}
+    .search-row input[type="search"]{width:70%}
+}
+
+/* Header right side: avatar and cart */
+.header .right{display:flex;align-items:center;gap:14px}
+.user-card{display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px;border-radius:8px}
+.user-card:hover{background:rgba(0,123,255,0.06);transform:translateY(-2px);box-shadow:0 6px 14px rgba(0,0,0,0.06)}
+.avatar-svg{width:44px;height:44px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid #eee}
+.user-name{font-weight:600;color:#333}
+.cart{display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit;padding:6px;border-radius:8px}
+.cart:hover{background:rgba(0,0,0,0.04);transform:translateY(-2px)}
+.cart-svg{width:38px;height:38px;display:flex;align-items:center;justify-content:center}
+.cart-count{background:var(--danger);color:#fff;padding:2px 8px;border-radius:12px;font-weight:700}

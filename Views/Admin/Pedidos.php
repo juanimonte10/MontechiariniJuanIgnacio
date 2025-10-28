@@ -10,6 +10,15 @@ if (!isset($_SESSION["usuario"]) || $_SESSION["usuario"]["rol"] !== "admin") {
 
 $pedidos = obtenerpedidos($conn);
 ?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Pedidos</title>
+    <link rel="stylesheet" href="../../Public/css/Registro.css">
+</head>
+<body>
+    <div class="admin-container">
 
 <h1>Pedidos Realizados</h1>
 

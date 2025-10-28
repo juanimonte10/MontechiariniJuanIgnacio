@@ -11,8 +11,16 @@ if (isset($_SESSION['usuario']) && $_SESSION['usuario']['rol'] === "admin") {
 $error = isset($_GET['error']) ? $_GET['error'] : '';
 $msg = isset($_GET['msg']) ? $_GET['msg'] : '';
 ?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Administrativo</title>
+</head>
+<body>
 
 <form action="../../Controllers/usuariocontroller.php" method="POST">
+    <H2>LOGIN ADMIN </H2>
     <input type="hidden" name="action" value="login_usuario">
     <input type="email" name="email" placeholder="Email" required>
     <input type="password" name="password" placeholder="Contraseña" required>

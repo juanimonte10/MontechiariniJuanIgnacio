@@ -21,7 +21,7 @@ $msg   = isset($_GET['msg']) ? $_GET['msg'] : '';
     <input type="password" name="password" placeholder="Ingrese una contraseña" required>
     <button type="submit">Registrarse</button>
 </form>
-
+<button><a href="../../logout.php"> Cerrar Sesión</a></button>
 <?php if($error): ?>
     <p style="color:red;"><?= htmlspecialchars($error) ?></p>
 <?php endif; ?>

@@ -18,11 +18,25 @@ function obtenerproduxID($conn,$id_producto){
 }
 
 //AGREGAR PRODUCTOS (PARA ADMINISTRADOR)
+function verificarProductoExistente($conn, $nombre) {
+    $sql = "SELECT COUNT(*) as total FROM productos WHERE nombre = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $nombre);
+    $stmt->execute();
+    $result = $stmt->get_result()->fetch_assoc();
+    return $result['total'] > 0;
+}
+
 function agregarproducto($conn,$nombre,$descripcion,$precio,$stock,$imagen){
+    // Verificar si el producto ya existe
+    if (verificarProductoExistente($conn, $nombre)) {
+        return "duplicado";
+    }
+    
     $sql="INSERT INTO productos(nombre,descripcion,precio,stock,imagen) VALUES (?,?,?,?,?)";
     $stmt=$conn->prepare($sql);
     $stmt->bind_param("ssdis",$nombre,$descripcion,$precio,$stock,$imagen);
-    return $stmt ->execute();
+    return $stmt->execute();
 }
 
 //EDITAR PRODUCTOS (PARA ADMINISTRADOR)
@@ -46,9 +60,10 @@ return $stmt->execute();
 //FUNCIONES DEL USUARIO (GENERAL)
 // REGISTRAR CLIENTE
 function registrarCliente($conn, $nombre, $email, $password) {
-    $sql = "INSERT INTO usuarios (nombre, email, password) VALUES (?, ?, ?)";
+    $rol="cliente";
+    $sql = "INSERT INTO usuarios (nombre, email, password,rol) VALUES (?, ?, ?,?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssss", $nombre, $email, $password);
+    $stmt->bind_param("ssss", $nombre, $email, $password,$rol);
     return $stmt->execute();
 }
 

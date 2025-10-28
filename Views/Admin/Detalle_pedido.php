@@ -26,6 +26,16 @@ if (!$detalles) {
     die("No se encontraron productos para este pedido.");
 }
 ?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle del Pedido</title>
+    <link rel="stylesheet" href="../../Public/css/Registro.css">
+</head>
+<body>
+<div class="admin-container">
+?>
 
 <h1>Detalle del Pedido #<?= htmlspecialchars($id_pedido) ?></h1>
 
@@ -54,5 +64,8 @@ if (!$detalles) {
     </tr>
 </table>
 
-<a href="Pedidos.php"> Volver a pedidos</a>
+<a href="Pedidos.php" class="btn-volver">Volver a pedidos</a>
+    </div>
+</body>
+</html>
 

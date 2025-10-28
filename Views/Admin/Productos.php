@@ -3,6 +3,9 @@ session_start();
 require_once "../../config/db.php";
 require_once "../../App/helpers/Funciones.php";
 
+// Imagen por defecto en base64 (un ícono simple de imagen)
+define('DEFAULT_IMAGE', 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2NjYyIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxyZWN0IHg9IjMiIHk9IjMiIHdpZHRoPSIxOCIgaGVpZ2h0PSIxOCIgcng9IjIiIHJ5PSIyIj48L3JlY3Q+PGNpcmNsZSBjeD0iOC41IiBjeT0iOC41IiByPSIxLjUiPjwvY2lyY2xlPjxwb2x5bGluZSBwb2ludHM9IjIxIDE1IDEzLjUgOC41IDUgMjEiPjwvcG9seWxpbmU+PC9zdmc+');
+
 // Verificar rol admin
 if (!isset($_SESSION["usuario"]) || $_SESSION["usuario"]["rol"] !== "admin") {
     header("Location: Loginadm.php?error=No tienes permisos");
@@ -30,17 +33,7 @@ $productos = obtenerproductos($conn);
 <head>
     <meta charset="UTF-8">
     <title>Gestión de Productos</title>
-    <style>
-        table { border-collapse: collapse; width: 100%; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-        th { background-color: #f2f2f2; }
-        img { max-width: 50px; }
-        .msg { color: green; }
-        .error { color: red; }
-        form { margin-bottom: 20px; }
-        input { margin: 5px; padding: 5px; }
-        button { padding: 5px 10px; }
-    </style>
+    <link rel="stylesheet" href="../../Public/css/Registro.css">
 </head>
 <body>
 
@@ -55,7 +48,7 @@ $productos = obtenerproductos($conn);
 
 <!-- Formulario Agregar o Editar Producto -->
 <h2><?= $editarproducto ? "Editar Producto" : "Agregar Producto" ?></h2>
-<form action="../../controllers/productocontroller.php" method="POST">
+<form action="../../controllers/productocontroller.php" method="POST" enctype="multipart/form-data">
     <input type="hidden" name="action" value="<?= $editarproducto ? "editar" : "agregar" ?>">
     <?php if ($editarproducto): ?>
         <input type="hidden" name="id_producto" value="<?= $editarproducto['id_producto'] ?>">
@@ -64,8 +57,188 @@ $productos = obtenerproductos($conn);
     <input type="text" name="descripcion" placeholder="Descripción" value="<?= $editarproducto['descripcion'] ?? '' ?>">
     <input type="number" step="0.01" name="precio" placeholder="Precio" value="<?= $editarproducto['precio'] ?? '' ?>" required>
     <input type="number" name="stock" placeholder="Stock" value="<?= $editarproducto['stock'] ?? '' ?>" required>
-    <input type="text" name="imagen" placeholder="Imagen (URL)" value="<?= $editarproducto['imagen'] ?? '' ?>">
+    <div class="image-upload-container">
+        <label for="imagen">Imagen del Producto:</label>
+        <div class="image-options">
+            <div class="option-container">
+                <input type="radio" name="imagen_tipo" id="imagen_archivo" value="archivo" checked>
+                <label for="imagen_archivo">Subir imagen desde mi computadora</label>
+                <input type="file" name="imagen" id="imagen" accept="image/*" class="file-input">
+                <p class="help-text">Arrastra una imagen aquí o haz clic para seleccionar</p>
+            </div>
+            
+            <div class="option-container">
+                <input type="radio" name="imagen_tipo" id="imagen_url" value="url">
+                <label for="imagen_url">Usar URL de imagen</label>
+                <input type="url" name="imagen_url_input" id="imagen_url_input" placeholder="Pega la URL de la imagen aquí" class="url-input" disabled>
+                <p class="help-text">
+                    Para usar una imagen de Google:
+                    1. Haz clic derecho sobre la imagen
+                    2. Selecciona "Copiar dirección de imagen"
+                    3. Pega la URL aquí
+                </p>
+            </div>
+        </div>
+
+        <div class="preview-container" style="display:none;">
+            <img id="preview" src="#" alt="Vista previa">
+            <div class="preview-info">
+                <span id="imagen-info"></span>
+                <button type="button" id="removeImage">Eliminar imagen</button>
+            </div>
+        </div>
+        <input type="hidden" name="imagen_final" id="imagen_final" value="<?= $editarproducto['imagen'] ?? '' ?>">
+    </div>
     <button type="submit"><?= $editarproducto ? "Actualizar Producto" : "Agregar Producto" ?></button>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInput = document.getElementById('imagen');
+        const urlInput = document.getElementById('imagen_url_input');
+        const preview = document.getElementById('preview');
+        const previewContainer = document.querySelector('.preview-container');
+        const removeButton = document.getElementById('removeImage');
+        const imagenFinal = document.getElementById('imagen_final');
+        const imagenInfo = document.getElementById('imagen-info');
+        
+        // Manejar cambios en los radio buttons
+        document.querySelectorAll('input[name="imagen_tipo"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Deshabilitar todos los inputs
+                fileInput.disabled = true;
+                urlInput.disabled = true;
+                
+                // Habilitar el input correspondiente
+                switch(this.value) {
+                    case 'archivo':
+                        fileInput.disabled = false;
+                        break;
+                    case 'url':
+                        urlInput.disabled = false;
+                        urlInput.focus();
+                        break;
+                }
+            });
+        });
+
+        // Manejar subida de archivo
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                        imagenFinal.value = e.target.result;
+                        previewContainer.style.display = 'block';
+                        mostrarInfoImagen(e.target.result, 'archivo');
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Manejar URL
+        urlInput.addEventListener('input', function() {
+            if (this.value && isValidUrl(this.value)) {
+                const processed = processGoogleImageUrl(this.value);
+                preview.src = processed;
+                imagenFinal.value = processed;
+                previewContainer.style.display = 'block';
+                mostrarInfoImagen(processed, 'url');
+            }
+        });
+
+        // Función para mostrar información de la imagen
+        function mostrarInfoImagen(src, tipo) {
+            let info = '';
+            if (tipo === 'archivo') {
+                info = 'Imagen subida desde el dispositivo';
+            } else if (tipo === 'url') {
+                info = 'Imagen desde URL: ' + src;
+            }
+            imagenInfo.textContent = info;
+        }
+
+        // Validar URL
+        function isValidUrl(string) {
+            try {
+                const url = new URL(string);
+                // Verificar si la URL termina en una extensión de imagen común
+                const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+                const hasImageExtension = imageExtensions.some(ext => 
+                    url.pathname.toLowerCase().endsWith(ext)
+                );
+                return hasImageExtension;
+            } catch (_) {
+                return false;
+            }
+        }
+
+        // Validar URL de Google Images
+        function processGoogleImageUrl(url) {
+            try {
+                const urlObj = new URL(url);
+                if (urlObj.hostname === 'www.google.com' && urlObj.pathname === '/imgres') {
+                    const imgUrl = urlObj.searchParams.get('imgurl');
+                    if (imgUrl) return imgUrl;
+                }
+                return url;
+            } catch (_) {
+                return url;
+            }
+        }
+
+        // Permitir arrastrar y soltar
+        const dropZone = document.querySelector('.image-upload-container');
+        
+        dropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            if (document.getElementById('imagen_archivo').checked) {
+                dropZone.classList.add('dragover');
+            }
+        });
+
+        dropZone.addEventListener('dragleave', function() {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            if (document.getElementById('imagen_archivo').checked) {
+                const file = e.dataTransfer.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    fileInput.files = e.dataTransfer.files;
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.src = e.target.result;
+                        imagenFinal.value = e.target.result;
+                        previewContainer.style.display = 'block';
+                    }
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+
+        // Mostrar imagen existente si hay una
+        if (imagenFinal.value) {
+            const processed = processGoogleImageUrl(imagenFinal.value);
+            preview.src = processed;
+            previewContainer.style.display = 'block';
+            mostrarInfoImagen(processed, imagenFinal.value.startsWith('data:') ? 'archivo' : 'url');
+        }
+
+        // Eliminar imagen
+        removeButton.addEventListener('click', function() {
+            fileInput.value = '';
+            urlInput.value = '';
+            imagenFinal.value = '';
+            previewContainer.style.display = 'none';
+            preview.src = '#';
+            // limpiar vista previa
+            previewContainer.style.display = 'none';
+            preview.src = '#';
+        });
+    });
+    </script>
     <?php if ($editarproducto): ?>
         <a href="Productos.php">Cancelar</a>
     <?php endif; ?>
@@ -76,7 +249,13 @@ $productos = obtenerproductos($conn);
 <h2>Lista de Productos</h2>
 <table>
     <tr>
-        <th>ID</th><th>Nombre</th><th>Descripción</th><th>Precio</th><th>Stock</th><th>Imagen</th><th>Acciones</th>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Descripción</th>
+        <th>Precio</th>
+        <th>Stock</th>
+        <th>Imagen</th>
+        <th>Acciones</th>
     </tr>
     <?php foreach ($productos as $p): ?>
     <tr>
@@ -90,14 +269,18 @@ $productos = obtenerproductos($conn);
                 <span style="color:red; font-weight:bold;"> (Sin stock disponible)</span>
             <?php endif; ?>
         </td>
-        <td>
-            <?php if (!empty($p["imagen"])): ?>
-                <img src="<?= htmlspecialchars($p["imagen"]) ?>" alt="<?= htmlspecialchars($p["nombre"]) ?>">
-            <?php endif; ?>
+        <td class="imagen-producto">
+            <div class="imagen-container">
+                <img src="<?= !empty($p["imagen"]) ? htmlspecialchars($p["imagen"]) : DEFAULT_IMAGE ?>" 
+                     alt="<?= htmlspecialchars($p["nombre"]) ?>"
+                     onerror="this.src=DEFAULT_IMAGE; this.onerror=null;">
+            </div>
         </td>
-        <td>
-            <a href="Productos.php?editar=<?= $p["id_producto"] ?>">Editar</a>
-            <a href="../../controllers/productocontroller.php?action=eliminar&id_producto=<?= $p["id_producto"] ?>" onclick="return confirm('¿Eliminar este producto?')">Eliminar</a>
+        <td class="acciones">
+            <a href="Productos.php?editar=<?= $p["id_producto"] ?>" class="btn-accion btn-editar">Editar</a>
+            <a href="../../controllers/productocontroller.php?action=eliminar&id_producto=<?= $p["id_producto"] ?>" 
+               onclick="return confirm('¿Eliminar este producto?')" 
+               class="btn-accion btn-eliminar">Eliminar</a>
         </td>
     </tr>
     <?php endforeach; ?>
