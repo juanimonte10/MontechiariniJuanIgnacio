@@ -41,32 +41,20 @@ if (!$producto) {
     <title><?= htmlspecialchars($producto['nombre']) ?> - Dos Hermanas</title>
     <link rel="stylesheet" href="../../Public/css/index.css">
     <link rel="stylesheet" href="../../Public/css/header.css">
-    <style>
-        .product-detail{max-width:1000px;margin:32px auto;padding:20px;background:#fff;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;gap:24px}
-        .product-detail img{max-width:420px;width:100%;height:auto;border-radius:8px;object-fit:cover}
-        .product-info{flex:1}
-        .product-info h1{margin-top:0}
-        .product-price{font-size:1.5rem;color:var(--primary);margin:12px 0}
-        .product-stock{color:#666;margin-bottom:12px}
-        .product-desc{line-height:1.6;color:#333}
-        .actions{margin-top:16px;display:flex;gap:12px}
-        .btn{padding:10px 14px;border-radius:8px;border:none;cursor:pointer}
-        .btn-primary{background:var(--primary);color:#fff}
-        .btn-outline{background:#f8f9fa;border:1px solid #ddd}
-    </style>
+    <link rel="stylesheet" href="../../Public/css/producto.css">
 </head>
 <body>
     <?php
         // mostrar header simple (index.php ya tiene header, aquí se reutiliza parcialmente)
     ?>
     <?php if (!empty($_SESSION['error'])): ?>
-        <div style="max-width:1000px;margin:18px auto;padding:12px 16px;border-radius:8px;background:#fdecea;color:#721c24;border:1px solid #f5c6cb;">
+        <div class="msg-error">
             <?= htmlspecialchars($_SESSION['error']) ?>
         </div>
         <?php unset($_SESSION['error']); ?>
     <?php endif; ?>
     <?php if (!empty($_SESSION['msg'])): ?>
-        <div style="max-width:1000px;margin:18px auto;padding:12px 16px;border-radius:8px;background:#e6ffed;color:#155724;border:1px solid #c3e6cb;">
+        <div class="msg-success">
             <?= htmlspecialchars($_SESSION['msg']) ?>
         </div>
         <?php unset($_SESSION['msg']); ?>
