@@ -142,16 +142,21 @@ $productos = obtenerproductos($conn);
     // 1. Control del menú desplegable del usuario
     const userMenu = document.getElementById('userMenu');
     const dropdownMenu = document.getElementById('dropdownMenu');
+    let menuTimeout;
 
     if (userMenu && dropdownMenu) {
         userMenu.addEventListener('mouseenter', () => {
-            // Solo muestra el menú si es admin o si el menú contiene más que solo el enlace de logout
-            if (isAdmin || dropdownMenu.children.length > 1) {
-                dropdownMenu.style.display = 'block';
-            }
+            clearTimeout(menuTimeout);
+            // El menú siempre se debe poder mostrar al pasar el cursor.
+            // La visibilidad del contenido (Panel Admin) ya se controla con PHP.
+            dropdownMenu.style.display = 'block';
         });
+
         userMenu.addEventListener('mouseleave', () => {
-            dropdownMenu.style.display = 'none';
+            // Ocultar el menú con un pequeño retardo para dar tiempo a mover el cursor hacia él.
+            menuTimeout = setTimeout(() => {
+                dropdownMenu.style.display = 'none';
+            }, 200);
         });
     }
 
