@@ -19,7 +19,7 @@ $msg   = isset($_GET['msg']) ? $_GET['msg'] : '';
 </style>
 <h2>Registrar nuevo Admin</h2>
 
-<form action="../../controllers/usuariocontroller.php" method="POST">
+<form action="../../controllers/Usuariocontroller.php" method="POST">
     <input type="hidden" name="action" value="registro_admin">
     <input type="text" name="nombre" placeholder="Nombre del admin" required>
     <input type="email" name="email" placeholder="Correo del admin" required>

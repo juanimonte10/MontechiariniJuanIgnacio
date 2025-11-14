@@ -11,7 +11,7 @@ if (isset($_SESSION['usuario'])) {
     unset($_SESSION['usuario']);
 }
 
-// Destruir sesión completamente
+
 session_destroy();
 
 // Redirigir al login de clientes (o donde quieras que empiece la página)

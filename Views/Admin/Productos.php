@@ -49,7 +49,7 @@ $productos = obtenerproductos($conn);
 
 <!-- Formulario Agregar o Editar Producto -->
 <h2><?= $editarproducto ? "Editar Producto" : "Agregar Producto" ?></h2>
-<form action="../../controllers/productocontroller.php" method="POST" enctype="multipart/form-data">
+<form action="../../controllers/Productocontroller.php" method="POST" enctype="multipart/form-data">
     <input type="hidden" name="action" value="<?= $editarproducto ? "editar" : "agregar" ?>">
     <?php if ($editarproducto): ?>
         <input type="hidden" name="id_producto" value="<?= $editarproducto['id_producto'] ?>">

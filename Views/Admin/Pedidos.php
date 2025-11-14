@@ -36,7 +36,7 @@ $pedidos = obtenerpedidos($conn);
         <td><?= htmlspecialchars($p["fecha"]) ?></td>
         <td>$<?= htmlspecialchars($p["total"]) ?></td>
         <td><?= htmlspecialchars($p["cliente"]) ?></td>
-        <td><a href="detalle_pedido.php?id=<?= $p["id_pedido"] ?>">Ver detalle</a></td>
+        <td><a href="Detalle_pedido.php?id=<?= $p["id_pedido"] ?>">Ver detalle</a></td>
     </tr>
     <?php endforeach; ?>
 </table>

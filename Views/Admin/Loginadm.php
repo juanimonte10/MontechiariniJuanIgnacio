@@ -22,7 +22,7 @@ $msg = isset($_GET['msg']) ? $_GET['msg'] : '';
 </head>
 <body>
 
-<form action="../../Controllers/usuariocontroller.php" method="POST">
+<form action="../../Controllers/Usuariocontroller.php" method="POST">
     <H2>LOGIN ADMIN </H2>
     <input type="hidden" name="action" value="login_usuario">
     <input type="email" name="email" placeholder="Email" required>
