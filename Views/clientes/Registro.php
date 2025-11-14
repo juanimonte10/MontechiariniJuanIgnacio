@@ -11,7 +11,9 @@ if (isset($_SESSION['usuario'])) {
 $error = isset($_GET['error']) ? $_GET['error'] : '';
 $msg   = isset($_GET['msg']) ? $_GET['msg'] : '';
 ?>
-
+<style>
+    <?php include "../../Public/css/registroAlt.css"; ?>
+</style>
 <h2>Registro de Cliente</h2>
 
 <form action="../../controllers/usuariocontroller.php" method="POST">

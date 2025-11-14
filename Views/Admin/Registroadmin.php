@@ -14,7 +14,9 @@ if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['rol'] !== "admin") {
 $error = isset($_GET['error']) ? $_GET['error'] : '';
 $msg   = isset($_GET['msg']) ? $_GET['msg'] : '';
 ?>
-
+<style>
+    <?php include "../../Public/css/registroAlt.css"; ?>
+</style>
 <h2>Registrar nuevo Admin</h2>
 
 <form action="../../controllers/usuariocontroller.php" method="POST">

@@ -10,7 +10,7 @@ if (!isset($_SESSION["usuario"]) || $_SESSION["usuario"]["rol"] !== "admin") {
 <head>
     <meta charset="UTF-8">
     <title>Dashboard Administrativo</title>
-    <link rel="stylesheet" href="../../Public/css/Registro.css">
+    <link rel="stylesheet" href="../../Public/css/registro.css">
 </head>
 <body>
     <div class="admin-container">

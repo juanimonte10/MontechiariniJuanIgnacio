@@ -11,6 +11,9 @@ if (isset($_SESSION['usuario']) && $_SESSION['usuario']['rol'] === "admin") {
 $error = isset($_GET['error']) ? $_GET['error'] : '';
 $msg = isset($_GET['msg']) ? $_GET['msg'] : '';
 ?>
+<style>
+    <?php include "../../Public/css/registroAlt.css"; ?>
+</style>
 <!DOCTYPE html>
 <html lang="es">
 <head>

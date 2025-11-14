@@ -18,6 +18,7 @@ $msg   = isset($_GET['msg']) ? $_GET['msg'] : '';
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
+   <link rel="stylesheet" href="../../Public/css/registroAlt.css">
 </head>
 <body>
 
