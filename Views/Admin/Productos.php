@@ -4,6 +4,7 @@ require_once "../../config/db.php";
 require_once "../../App/helpers/Funciones.php";
 
 // Imagen por defecto en base64 (un ícono simple de imagen)
+define('DEFAULT_IMAGE_PATH', '../../Public/img/placeholder.png'); // Ruta a la imagen por defecto
 define('DEFAULT_IMAGE', 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2NjYyIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxyZWN0IHg9IjMiIHk9IjMiIHdpZHRoPSIxOCIgaGVpZ2h0PSIxOCIgcng9IjIiIHJ5PSIyIj48L3JlY3Q+PGNpcmNsZSBjeD0iOC41IiBjeT0iOC41IiByPSIxLjUiPjwvY2lyY2xlPjxwb2x5bGluZSBwb2ludHM9IjIxIDE1IDEzLjUgOC41IDUgMjEiPjwvcG9seWxpbmU+PC9zdmc+');
 
 // Verificar rol admin
@@ -59,24 +60,11 @@ $productos = obtenerproductos($conn);
     <input type="number" name="stock" placeholder="Stock" value="<?= $editarproducto['stock'] ?? '' ?>" required>
     <div class="image-upload-container">
         <label for="imagen">Imagen del Producto:</label>
-        <div class="image-options">
-            <div class="option-container">
-                <input type="radio" name="imagen_tipo" id="imagen_archivo" value="archivo" checked>
-                <label for="imagen_archivo">Subir imagen desde mi computadora</label>
-                <input type="file" name="imagen" id="imagen" accept="image/*" class="file-input">
-                <p class="help-text">Arrastra una imagen aquí o haz clic para seleccionar</p>
-            </div>
-            
-            <div class="option-container">
-                <input type="radio" name="imagen_tipo" id="imagen_url" value="url">
+
+        <div class="option-container">
+
                 <label for="imagen_url">Usar URL de imagen</label>
-                <input type="url" name="imagen_url_input" id="imagen_url_input" placeholder="Pega la URL de la imagen aquí" class="url-input" disabled>
-                <p class="help-text">
-                    Para usar una imagen de Google:
-                    1. Haz clic derecho sobre la imagen
-                    2. Selecciona "Copiar dirección de imagen"
-                    3. Pega la URL aquí
-                </p>
+                <input type="url" name="imagen_url_input" id="imagen_url_input" placeholder="Pega la URL de la imagen aquí" class="url-input" >
             </div>
         </div>
 
@@ -100,40 +88,13 @@ $productos = obtenerproductos($conn);
         const imagenFinal = document.getElementById('imagen_final');
         const imagenInfo = document.getElementById('imagen-info');
         
-        // Manejar cambios en los radio buttons
-        document.querySelectorAll('input[name="imagen_tipo"]').forEach(radio => {
-            radio.addEventListener('change', function() {
-                // Deshabilitar todos los inputs
-                fileInput.disabled = true;
-                urlInput.disabled = true;
-                
-                // Habilitar el input correspondiente
-                switch(this.value) {
-                    case 'archivo':
-                        fileInput.disabled = false;
-                        break;
-                    case 'url':
-                        urlInput.disabled = false;
-                        urlInput.focus();
-                        break;
-                }
-            });
-        });
 
-        // Manejar subida de archivo
-        fileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                        imagenFinal.value = e.target.result;
-                        previewContainer.style.display = 'block';
-                        mostrarInfoImagen(e.target.result, 'archivo');
-                }
-                reader.readAsDataURL(file);
-            }
-        });
+
+
+
+
+
+
 
         // Manejar URL
         urlInput.addEventListener('input', function() {
@@ -186,61 +147,32 @@ $productos = obtenerproductos($conn);
             }
         }
 
-        // Permitir arrastrar y soltar
-        const dropZone = document.querySelector('.image-upload-container');
-        
-        dropZone.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            if (document.getElementById('imagen_archivo').checked) {
-                dropZone.classList.add('dragover');
-            }
-        });
-
-        dropZone.addEventListener('dragleave', function() {
-            dropZone.classList.remove('dragover');
-        });
-
-        dropZone.addEventListener('drop', function(e) {
-            e.preventDefault();
-            dropZone.classList.remove('dragover');
-            if (document.getElementById('imagen_archivo').checked) {
-                const file = e.dataTransfer.files[0];
-                if (file && file.type.startsWith('image/')) {
-                    fileInput.files = e.dataTransfer.files;
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        preview.src = e.target.result;
-                        imagenFinal.value = e.target.result;
-                        previewContainer.style.display = 'block';
-                    }
-                    reader.readAsDataURL(file);
-                }
-            }
-        });
-
         // Mostrar imagen existente si hay una
         if (imagenFinal.value) {
             const processed = processGoogleImageUrl(imagenFinal.value);
             preview.src = processed;
             previewContainer.style.display = 'block';
+            // Rellenar el input de la URL si la imagen existente es una URL válida
+            if (!imagenFinal.value.startsWith('data:')) {
+                urlInput.value = imagenFinal.value;
+            }
             mostrarInfoImagen(processed, imagenFinal.value.startsWith('data:') ? 'archivo' : 'url');
         }
 
         // Eliminar imagen
         removeButton.addEventListener('click', function() {
-            fileInput.value = '';
-            urlInput.value = '';
-            imagenFinal.value = '';
-            previewContainer.style.display = 'none';
-            preview.src = '#';
-            // limpiar vista previa
-            previewContainer.style.display = 'none';
-            preview.src = '#';
+
+            urlInput.value = ''; // Limpiar el input de la URL
+            imagenFinal.value = 'DELETE'; // Enviar señal al backend para usar imagen por defecto
+            preview.src = '<?= DEFAULT_IMAGE_PATH ?>'; // Mostrar imagen por defecto en la vista previa
+            previewContainer.style.display = 'block';
+            mostrarInfoImagen('<?= DEFAULT_IMAGE_PATH ?>', 'url');
         });
     });
     </script>
     <?php if ($editarproducto): ?>
         <a href="Productos.php">Cancelar</a>
+
     <?php endif; ?>
 </form>
 
@@ -266,7 +198,7 @@ $productos = obtenerproductos($conn);
         <td>
             <?= $p["stock"] ?>
             <?php if ($p["stock"] == 0): ?>
-                <span style="color:red; font-weight:bold;"> (Sin stock disponible)</span>
+                <span style="color:red; font-weight:bold;"> <br> No disponible</span>
             <?php endif; ?>
         </td>
         <td class="imagen-producto">
@@ -294,5 +226,3 @@ $productos = obtenerproductos($conn);
 
 </body>
 </html>
-
-

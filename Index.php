@@ -26,16 +26,18 @@ $productos = obtenerproductos($conn);
 <body>
     <?php
         $displayName = '';
+        $isAdmin = isset($_SESSION['usuario']); // Variable para saber si es admin
+
         if (isset($_SESSION['cliente'])) {
             $displayName = htmlspecialchars($_SESSION['cliente']['nombre']);
-        } elseif (isset($_SESSION['usuario'])) {
+        } elseif ($isAdmin) {
             $displayName = htmlspecialchars($_SESSION['usuario']['nombre']) . ' (Admin)';
         }
     ?>
     <div class="header">
         <div class="title">Dos Hermanas</div>
         <div class="right">
-            <div class="user-menu">
+            <div class="user-menu" id="userMenu">
                 <div class="user-card">
                     <div class="avatar-svg">
                         <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -45,8 +47,8 @@ $productos = obtenerproductos($conn);
                     </div>
                     <div class="user-name"><?= $displayName ?></div>
                 </div>
-                <div class="dropdown-menu">
-                    <?php if (isset($_SESSION['usuario'])): ?>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <?php if ($isAdmin): ?>
                         <a href="Views/Admin/dashboard.php" class="dropdown-item">
                             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M4 13h6c.55 0 1-.45 1-1V4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v8c0 .55.45 1 1 1zm0 8h6c.55 0 1-.45 1-1v-4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v4c0 .55.45 1 1 1zm10 0h6c.55 0 1-.45 1-1v-8c0-.55-.45-1-1-1h-6c-.55 0-1 .45-1 1v8c0 .55.45 1 1 1zM13 4v4c0 .55.45 1 1 1h6c.55 0 1-.45 1-1V4c0-.55-.45-1-1-1h-6c-.55 0-1 .45-1 1z" fill="currentColor"/>
@@ -115,22 +117,44 @@ $productos = obtenerproductos($conn);
                         <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMTYwJyBoZWlnaHQ9JzEyMCcgdmlld0JveD0nMCAwIDE2MCAxMjAnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zyc+PHJlY3Qgd2lkdGg9JzE2MCcgaGVpZ2h0PScxMjAnIGZpbGw9JyNkZGRkZCcgcng9JzgnLz48L3N2Zz4=' alt="Sin imagen">
                     <?php endif; ?>
                     <p class="precio">$<?= number_format($p['precio'], 2) ?></p>
-                    <p class="stock">Stock: <?= $p['stock'] ?> <?php if ($p['stock'] == 0): ?><span style="color:var(--danger); font-weight:bold;"> (Sin stock disponible)</span><?php endif; ?></p>
+                    <p class="stock">Stock: <?= $p['stock'] ?> <?php if ($p['stock'] == 0): ?><span style="color:var(--danger); font-weight:bold;"> <br> No disponible </span><?php endif; ?></p>
                     <div class="product-actions">
                         <form action="controllers/carrito_controller.php" method="POST" style="display:inline;">
                             <input type="hidden" name="id_producto" value="<?= $p['id_producto'] ?>">
                             <input type="hidden" name="redirect" value="back">
-                            <button class="btn btn-primary" type="submit" <?= ($p['stock'] == 0) ? 'disabled' : '' ?>>Agregar</button>
+                            <button class="btn btn-primary" type="submit" style="<?= ($p['stock'] == 0) ? 'display:none;' : '' ?>">Agregar</button>
                         </form>
                         <a href="Views/clientes/Producto.php?id=<?= $p['id_producto'] ?>" class="btn btn-outline">Ver</a>
                     </div>
                 </div>
                 <?php endforeach; ?>
+                <div id="noResultsMessage" style="display:none; text-align:center; padding: 20px; width:100%;">
+                    <p>No se encontraron productos que coincidan con la búsqueda.</p>
+                </div>
             </div>
         </main>
     </div>
 
     <script>
+    // Rol del usuario (obtenido desde PHP)
+    const isAdmin = <?= json_encode($isAdmin) ?>;
+
+    // 1. Control del menú desplegable del usuario
+    const userMenu = document.getElementById('userMenu');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+
+    if (userMenu && dropdownMenu) {
+        userMenu.addEventListener('mouseenter', () => {
+            // Solo muestra el menú si es admin o si el menú contiene más que solo el enlace de logout
+            if (isAdmin || dropdownMenu.children.length > 1) {
+                dropdownMenu.style.display = 'block';
+            }
+        });
+        userMenu.addEventListener('mouseleave', () => {
+            dropdownMenu.style.display = 'none';
+        });
+    }
+
     // Sidebar toggle and hover-open behavior
     const sidebarToggle = document.getElementById('sidebarToggle');
     const sidebar = document.getElementById('sidebar');
@@ -167,18 +191,33 @@ $productos = obtenerproductos($conn);
     // Simple client-side search
     const productsGrid = document.getElementById('productsGrid');
     const products = Array.from(document.querySelectorAll('.producto'));
+    const noResultsMessage = document.getElementById('noResultsMessage');
+
     function filterProducts(term){
         term = term.trim().toLowerCase();
+        let visibleProducts = 0;
+
         products.forEach(p => {
             const name = p.getAttribute('data-name') || '';
-            if (!term || name.indexOf(term) !== -1) p.style.display = '';
-            else p.style.display = 'none';
+            const isVisible = !term || name.includes(term);
+            p.style.display = isVisible ? '' : 'none';
+            if (isVisible) {
+                visibleProducts++;
+            }
         });
+
+        // 2. Mostrar u ocultar el mensaje de "no hay resultados"
+        if (visibleProducts === 0) {
+            noResultsMessage.style.display = 'block';
+        } else {
+            noResultsMessage.style.display = 'none';
+        }
     }
+
     document.getElementById('searchBtn').addEventListener('click', ()=>{
         const term = document.getElementById('globalSearch').value; filterProducts(term);
     });
-    document.getElementById('globalSearch').addEventListener('keyup', (e)=>{ if(e.key === 'Enter') document.getElementById('searchBtn').click(); });
+    document.getElementById('globalSearch').addEventListener('keyup', (e)=>{ filterProducts(e.target.value); });
 
     // sidebar search
     document.getElementById('sideApply').addEventListener('click', ()=>{
