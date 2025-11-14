@@ -25,12 +25,12 @@ if (isset($_POST['id_producto'])) {
             if ($stock <= 0) {
                 $_SESSION['error'] = "Ya no hay stock disponible de '" . $producto['nombre'] . "'";
             } else {
-                $_SESSION['error'] = "No puedes agregar $cantidad unidades. Solo quedan $stock disponibles (Tienes $actualEnCarrito en el carrito).";
+                $_SESSION['error'] = "No puedes agregar $cantidad . Solo quedan $stock disponibles (Tienes $actualEnCarrito en el carrito).";
             }
         } else {
-            // OK, agregar
+            //  agregar
             agregaralcarrito($id_producto, $cantidad);
-            $_SESSION['msg'] = "Se agregaron $cantidad unidad(es) de '{$producto['nombre']}' al carrito.";
+            $_SESSION['msg'] = "Se agrego  una $cantidad unidad de '{$producto['nombre']}' al carrito.";
         }
     }
     // decidir a dónde redirigir: si el formulario envía redirect=carrito ir al carrito,

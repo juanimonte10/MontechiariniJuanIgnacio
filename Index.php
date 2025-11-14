@@ -116,7 +116,7 @@ $productos = obtenerproductos($conn);
     </div>
 
     <script>
-    // Rol del usuario (obtenido desde PHP)
+    // Rol del usuario 
     const isAdmin = <?= json_encode($isAdmin) ?>;
 
     // Control del menú desplegable del usuario

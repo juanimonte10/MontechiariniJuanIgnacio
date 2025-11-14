@@ -88,14 +88,6 @@ $productos = obtenerproductos($conn);
         const imagenFinal = document.getElementById('imagen_final');
         const imagenInfo = document.getElementById('imagen-info');
         
-
-
-
-
-
-
-
-
         // Manejar URL
         urlInput.addEventListener('input', function() {
             if (this.value && isValidUrl(this.value)) {

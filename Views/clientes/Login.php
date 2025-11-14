@@ -22,7 +22,7 @@ $msg   = isset($_GET['msg']) ? $_GET['msg'] : '';
 </head>
 <body>
 
-<h2>Login </h2>
+<h2>Iniciar sesion </h2>
 
 <form action="../../controllers/usuariocontroller.php" method="POST">
     <input type="hidden" name="action" value="login_usuario">
