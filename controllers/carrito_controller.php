@@ -25,7 +25,7 @@ if (isset($_POST['id_producto'])) {
             if ($stock <= 0) {
                 $_SESSION['error'] = "Ya no hay stock disponible de '" . $producto['nombre'] . "'";
             } else {
-                $_SESSION['error'] = "No puedes agregar $cantidad unidades. Solo quedan $stock en stock (ya tienes $actualEnCarrito en el carrito).";
+                $_SESSION['error'] = "No puedes agregar $cantidad unidades. Solo quedan $stock disponibles (Tienes $actualEnCarrito en el carrito).";
             }
         } else {
             // OK, agregar

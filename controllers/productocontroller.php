@@ -6,7 +6,6 @@ require_once __DIR__ . "/../App/helpers/Funciones.php";
 // Verificar que el usuario sea administrador
 if (!isset($_SESSION["usuario"]) || $_SESSION["usuario"]["rol"] !== "admin") {    
     // Simplificamos la redirección asumiendo una estructura de proyecto consistente.
-    // La ruta relativa es más mantenible si la estructura de carpetas no cambia.
     $_SESSION['error'] = "No tienes permisos para acceder a esta sección.";
     header("Location: ../Views/Admin/Loginadm.php");
     exit;
@@ -102,13 +101,13 @@ if (isset($_POST['action']) && $_POST['action'] === "editar") {
     $imagen_enviada = trim($_POST['imagen_final'] ?? '');
 
     if (!empty($url) && $url !== $existingImagen) {
-        // 1. Si se ingresó una nueva URL, se usa esa.
+        //  Si se ingresó una nueva URL, se usa esa.
         $imagen_final = processGoogleImageUrl($url);
     } elseif ($imagen_enviada === 'DELETE') {
-        // 2. Si se presionó "Eliminar imagen", se usa la de por defecto.
+        // "Eliminar imagen", se usa la de por defecto.
         $imagen_final = '../../Public/img/placeholder.png';
     } else {
-        // 3. Si no pasó nada de lo anterior, se mantiene la imagen existente.
+        //  se mantiene la imagen existente.
         $imagen_final = $existingImagen;
     }
 

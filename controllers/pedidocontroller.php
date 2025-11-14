@@ -18,7 +18,7 @@ if (isset($_POST['action']) && $_POST['action'] == "crear_pedido") {
 
     $carrito = $_SESSION['carrito'] ?? [];
 
-    // --- VALIDACIÓN DE STOCK ---
+    //  VALIDACIÓN DE STOCK 
     $stock_insuficiente = [];
     foreach ($carrito as $id_producto => $cantidad) {
         $producto = obtenerproduxID($conn, $id_producto);
@@ -33,7 +33,7 @@ if (isset($_POST['action']) && $_POST['action'] == "crear_pedido") {
         exit;
     }
 
-    // Crear pedido si todo está bien
+    // Crear pedido
     $resultado = crearpedido($conn, $id_cliente, $carrito);
 
     if ($resultado === true) {

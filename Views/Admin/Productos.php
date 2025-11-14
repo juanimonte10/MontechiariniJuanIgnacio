@@ -59,7 +59,7 @@ $productos = obtenerproductos($conn);
     <input type="number" step="0.01" name="precio" placeholder="Precio" value="<?= $editarproducto['precio'] ?? '' ?>" required>
     <input type="number" name="stock" placeholder="Stock" value="<?= $editarproducto['stock'] ?? '' ?>" required>
     <div class="image-upload-container">
-        <label for="imagen">Imagen del Producto:</label>
+        <!-- <label for="imagen">Imagen del Producto:</label> -->
 
         <div class="option-container">
 

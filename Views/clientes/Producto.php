@@ -8,30 +8,7 @@ if ($id <= 0) {
     header('Location: ../../Index.php');
     exit;
 }
-
 $producto = obtenerproduxID($conn, $id);
-if (!$producto) {
-    // Producto no encontrado
-    ?>
-    <!DOCTYPE html>
-    <html lang="es">
-    <head>
-        <meta charset="utf-8">
-        <title>Producto no encontrado</title>
-        <link rel="stylesheet" href="../../Public/css/index.css">
-    </head>
-    <body>
-        <div style="max-width:900px;margin:40px auto;padding:20px;text-align:center;">
-            <h2>Producto no encontrado</h2>
-            <p>El producto que intentas ver no existe o fue eliminado.</p>
-            <p><a href="../../Index.php">Volver al catálogo</a></p>
-        </div>
-    </body>
-    </html>
-    <?php
-    exit;
-}
-
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -45,7 +22,7 @@ if (!$producto) {
 </head>
 <body>
     <?php
-        // mostrar header simple (index.php ya tiene header, aquí se reutiliza parcialmente)
+        // se muestra el header del index
     ?>
     <?php if (!empty($_SESSION['error'])): ?>
         <div class="msg-error">
@@ -72,7 +49,7 @@ if (!$producto) {
                 <div class="product-info">
                     <h1><?= htmlspecialchars($producto['nombre']) ?></h1>
                     <div class="product-price">$<?= number_format($producto['precio'],2) ?></div>
-                    <div class="product-stock">Stock: <?= $producto['stock'] ?> <?php if ($producto['stock'] == 0): ?><strong style="color:var(--danger)"> (Sin stock)</strong><?php endif; ?></div>
+                    <div class="product-stock">Stock: <?= $producto['stock'] ?> <?php if ($producto['stock'] == 0): ?><strong style="color:var(--danger)"> Sin stock</strong><?php endif; ?></div>
                     <div class="product-desc"><?= nl2br(htmlspecialchars($producto['descripcion'])) ?></div>
 
                     <div class="actions">
@@ -88,31 +65,7 @@ if (!$producto) {
             </div>
         </main>
     </div>
-    <script>
-    (function(){
-        const form = document.getElementById('addToCartForm');
-        const qty = document.getElementById('qtyInput');
-        const max = parseInt(qty.getAttribute('max') || '0', 10);
-        form.addEventListener('submit', function(e){
-            const v = parseInt(qty.value || '0', 10);
-            if (isNaN(v) || v < 1) {
-                e.preventDefault();
-                alert('Ingresa una cantidad válida');
-                return;
-            }
-            if (max <= 0) {
-                e.preventDefault();
-                alert('Ya no hay stock disponible de este producto');
-                return;
-            }
-            if (v > max) {
-                e.preventDefault();
-                alert('No puedes agregar más de ' + max + ' unidad(es).');
-                return;
-            }
-            // otherwise allow submit; server will also validate
-        });
-    })();
-    </script>
+
+
 </body>
 </html>

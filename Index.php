@@ -1,6 +1,4 @@
-
-
-<?php
+<?php 
 session_start();
 require_once __DIR__ . "/config/db.php";
 require_once __DIR__ . "/App/helpers/Funciones.php";
@@ -49,7 +47,7 @@ $productos = obtenerproductos($conn);
                 </div>
                 <div class="dropdown-menu" id="dropdownMenu">
                     <?php if ($isAdmin): ?>
-                        <a href="Views/Admin/dashboard.php" class="dropdown-item">
+                        <a   href="Views/Admin/dashboard.php" class="dropdown-item">
                             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M4 13h6c.55 0 1-.45 1-1V4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v8c0 .55.45 1 1 1zm0 8h6c.55 0 1-.45 1-1v-4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v4c0 .55.45 1 1 1zm10 0h6c.55 0 1-.45 1-1v-8c0-.55-.45-1-1-1h-6c-.55 0-1 .45-1 1v8c0 .55.45 1 1 1zM13 4v4c0 .55.45 1 1 1h6c.55 0 1-.45 1-1V4c0-.55-.45-1-1-1h-6c-.55 0-1 .45-1 1z" fill="currentColor"/>
                             </svg>
@@ -78,25 +76,7 @@ $productos = obtenerproductos($conn);
         </div>
     </div>
 
-    <button class="sidebar-toggle" id="sidebarToggle">☰ Categorias</button>
-    <div class="sidebar" id="sidebar">
-        <h3>Buscar productos</h3>
-        <div class="field">
-            <label>Nombre</label>
-            <input type="text" id="sideSearch" placeholder="Buscar por nombre...">
-        </div>
-        <div class="field">
-            <label>Categoría (opcional)</label>
-            <select id="sideCategory">
-                <option value="">Todas</option>
-                <option value="categoria1">Categoría 1</option>
-                <option value="categoria2">Categoría 2</option>
-            </select>
-        </div>
-        <div class="field">
-            <button id="sideApply">Aplicar</button>
-        </div>
-    </div>
+    <!-- (AGREGAR A FUTURO :CATEGORIA) -->
 
     <div class="container">
         <main class="main">
@@ -129,7 +109,7 @@ $productos = obtenerproductos($conn);
                 </div>
                 <?php endforeach; ?>
                 <div id="noResultsMessage" style="display:none; text-align:center; padding: 20px; width:100%;">
-                    <p>No se encontraron productos que coincidan con la búsqueda.</p>
+                    <p>El producto no fue encontrado.</p>
                 </div>
             </div>
         </main>
@@ -139,7 +119,7 @@ $productos = obtenerproductos($conn);
     // Rol del usuario (obtenido desde PHP)
     const isAdmin = <?= json_encode($isAdmin) ?>;
 
-    // 1. Control del menú desplegable del usuario
+    // Control del menú desplegable del usuario
     const userMenu = document.getElementById('userMenu');
     const dropdownMenu = document.getElementById('dropdownMenu');
     let menuTimeout;
@@ -147,53 +127,17 @@ $productos = obtenerproductos($conn);
     if (userMenu && dropdownMenu) {
         userMenu.addEventListener('mouseenter', () => {
             clearTimeout(menuTimeout);
-            // El menú siempre se debe poder mostrar al pasar el cursor.
-            // La visibilidad del contenido (Panel Admin) ya se controla con PHP.
             dropdownMenu.style.display = 'block';
         });
 
         userMenu.addEventListener('mouseleave', () => {
-            // Ocultar el menú con un pequeño retardo para dar tiempo a mover el cursor hacia él.
             menuTimeout = setTimeout(() => {
                 dropdownMenu.style.display = 'none';
             }, 200);
         });
     }
 
-    // Sidebar toggle and hover-open behavior
-    const sidebarToggle = document.getElementById('sidebarToggle');
-    const sidebar = document.getElementById('sidebar');
-    let hoverTimeout;
-    // click to toggle (for touch / click users)
-    sidebarToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
-    // open when mouse enters the toggle, close when mouse leaves (unless hovering sidebar)
-    sidebarToggle.addEventListener('mouseenter', () => {
-        clearTimeout(hoverTimeout);
-        sidebar.classList.add('open');
-        document.body.classList.add('sidebar-open');
-    });
-    sidebarToggle.addEventListener('mouseleave', () => {
-        // give a small delay so user can move into the sidebar
-        hoverTimeout = setTimeout(() => {
-            if (!sidebar.matches(':hover')) {
-                sidebar.classList.remove('open');
-                document.body.classList.remove('sidebar-open');
-            }
-        }, 250);
-    });
-    sidebar.addEventListener('mouseenter', ()=>{
-        clearTimeout(hoverTimeout);
-        sidebar.classList.add('open');
-        document.body.classList.add('sidebar-open');
-    });
-    sidebar.addEventListener('mouseleave', ()=>{
-        hoverTimeout = setTimeout(()=>{
-            sidebar.classList.remove('open');
-            document.body.classList.remove('sidebar-open');
-        }, 200);
-    });
-
-    // Simple client-side search
+    // Buscador global 
     const productsGrid = document.getElementById('productsGrid');
     const products = Array.from(document.querySelectorAll('.producto'));
     const noResultsMessage = document.getElementById('noResultsMessage');
@@ -206,27 +150,19 @@ $productos = obtenerproductos($conn);
             const name = p.getAttribute('data-name') || '';
             const isVisible = !term || name.includes(term);
             p.style.display = isVisible ? '' : 'none';
-            if (isVisible) {
-                visibleProducts++;
-            }
+            if (isVisible) visibleProducts++;
         });
 
-        // 2. Mostrar u ocultar el mensaje de "no hay resultados"
-        if (visibleProducts === 0) {
-            noResultsMessage.style.display = 'block';
-        } else {
-            noResultsMessage.style.display = 'none';
-        }
+        noResultsMessage.style.display = visibleProducts === 0 ? 'block' : 'none';
     }
 
     document.getElementById('searchBtn').addEventListener('click', ()=>{
-        const term = document.getElementById('globalSearch').value; filterProducts(term);
+        const term = document.getElementById('globalSearch').value;
+        filterProducts(term);
     });
-    document.getElementById('globalSearch').addEventListener('keyup', (e)=>{ filterProducts(e.target.value); });
 
-    // sidebar search
-    document.getElementById('sideApply').addEventListener('click', ()=>{
-        const term = document.getElementById('sideSearch').value; filterProducts(term); sidebar.classList.remove('open');
+    document.getElementById('globalSearch').addEventListener('keyup', (e)=>{
+        filterProducts(e.target.value);
     });
     </script>
 </body>

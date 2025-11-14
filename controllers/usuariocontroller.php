@@ -39,19 +39,19 @@ if (isset($_POST['action']) && $_POST['action'] == "registro_usuario") {
     $email = $_POST['email'];
     $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
 
-    // 🔍 Verificar si ya existe el email antes de registrar
+    //  Verificar si ya existe el email antes de registrar
     $check = $conn->prepare("SELECT id_usuario FROM usuarios WHERE email = ?");
     $check->bind_param("s", $email);
     $check->execute();
     $check->store_result();
 
     if ($check->num_rows > 0) {
-        // Ya existe ese usuario → redirigimos con mensaje de error
+        // Ya existe el usuario , que muestre  mensaje de error
         header("Location: ../Views/clientes/Registro.php?error=El usuario ya está registrado");
         exit;
     }
 
-    // Si no existe → lo registramos normalmente
+    
     registrarCliente($conn, $nombre, $email, $password);
 
     header("Location: ../Views/clientes/Login.php?msg=Registro exitoso");
@@ -59,7 +59,7 @@ if (isset($_POST['action']) && $_POST['action'] == "registro_usuario") {
 }
 
 
-// REGISTRO DE ADMIN (solo admin puede crear otro admin)
+// REGISTRO DE ADMIN (solo un admin va a poder crear otro admin)
 if (isset($_POST['action']) && $_POST['action'] == "registro_admin") {
     session_start();
     if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['rol'] !== "admin") {
@@ -71,7 +71,7 @@ if (isset($_POST['action']) && $_POST['action'] == "registro_admin") {
     $email = $_POST['email'];
     $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
 
-    // 🔍 Verificar si el email ya existe también para admins
+    // verificamos devuelta si ya existe el email
     $check = $conn->prepare("SELECT id_usuario FROM usuarios WHERE email = ?");
     $check->bind_param("s", $email);
     $check->execute();

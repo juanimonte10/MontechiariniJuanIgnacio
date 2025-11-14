@@ -22,9 +22,9 @@ if (isset($_GET['id_pedido'])) {
 $detalles = obtenerdetallepedido($conn, $id_pedido);
 
 // Si no hay resultados
-if (!$detalles) {
-    die("No se encontraron productos para este pedido.");
-}
+// if (!$detalles) {
+//     die("No se encontraron productos para este pedido.");
+// }
 ?>
 <!DOCTYPE html>
 <html lang="es">
